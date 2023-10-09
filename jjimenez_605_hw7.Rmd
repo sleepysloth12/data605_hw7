@@ -1,10 +1,11 @@
 ---
-title: "Data 607 HW 7"
+title: "Data 605 HW 7"
 author: "Jean Jimenez"
 date: "2023-10-09"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
