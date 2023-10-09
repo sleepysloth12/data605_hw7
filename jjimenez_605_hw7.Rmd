@@ -1,0 +1,227 @@
+---
+title: "Data 607 HW 7"
+author: "Jean Jimenez"
+date: "2023-10-09"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# HW 7
+
+## Question 1 {.tabset}
+
+Let X1, X2, . . . , Xn be n mutually independent random variables, each of which is uniformly distributed on the integers from 1 to k. Let Y denote the minimum of the Xi's. Find the distribution of Y
+
+### Step One
+
+First, I set n = 10 and k =30, meaning that there will be 10 random variables per trial and 30 is the maximum value. I will be simulating this scenario 30,000 times.
+
+```{r}
+
+set.seed(10092023)
+
+# Number of random variables
+n = 10 
+
+# Range of each random variable (1 to k)
+k = 30  
+
+# Number of simulations 
+sims = 30000  
+
+```
+
+### Step 2
+
+Here, we generate 10 random variables from 1 to 30 using the sample function and allowing for repeating values. We then find the minimum value among the 10 random variables and add it to min_val.
+
+```{r}
+
+
+min_val = numeric(sims)
+
+# perform trials
+
+for (i in 1:sims) {
+  x = sample(1:k, n, replace = TRUE)  
+  min_val[i] = min(x)  
+}
+```
+
+### Distribution of Y
+
+This is a histogram that shows the distribution of the minimum values we collected, which is an estimation of the distribution of Y.
+
+```{r}
+# plotting the distribution of y
+
+hist(min_val, breaks = k, main = "Distribution of Y", xlab = "Y", ylab = "Frequency")
+```
+
+## Question 2 {.tabset}
+
+Your organization owns a copier (future lawyers, etc.) or MRI (future doctors). This machine has a manufacturer's expected lifetime of 10 years. This means that we expect one failure every ten years. (Include the probability statements and R Code for each part.).
+
+### Part A
+
+**Geometric**
+
+**Question**
+
+What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a geometric. (Hint: the probability is equivalent to not failing during the first 8 years..)
+
+$P(X > 8) = 1 - P(X \leq 8)$
+
+$E[X] = \frac{1}{p}$
+
+$\sigma=\sqrt{\frac{1-p}{p^2}}$
+
+```{r}
+
+#prob of failing any year
+p_L_a = 1 / 10
+
+# prob machine will fail after 8 yrs
+
+prob_L_after_8_a = 1 - pgeom(8, prob = p_L_a)
+
+#expected val
+exp_val_a=1/p_L_a
+
+std_dev_a=sqrt((1-p_L_a)/p_L_a^1)
+
+cat("The probability that the machine will fail after 8 years is",prob_L_after_8_a,"or",prob_L_after_8_a*100,"% \n")
+
+cat("The expected number of failures in 8 years is",exp_val_a,"failures \n")
+
+cat("The standard deviation is +/-",std_dev_a,"failures \n")
+
+```
+
+### Part B
+
+**Exponential**
+
+**Question**
+
+What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as an exponential.
+
+$P(X > 8) = e^{-\lambda \times 8}$
+
+$E[X] = \frac{1}{\lambda}$
+
+$\sigma= \frac{1}{\lambda}$
+
+```{r}
+
+# rate of failure per year
+lambda_L_b = 1 / 10
+
+# Probability that the machine will fail after 8 years
+prob_L_after_8_b = exp(-lambda_L_b * 8)
+
+# expected value
+
+exp_val_b = 1 / lambda_L_b
+
+# standard deviation
+
+std_dev_b = 1 / lambda_L_b
+
+cat("The probability that the machine will fail after 8 years is",prob_L_after_8_b,"or",prob_L_after_8_b*100,"% \n")
+
+cat("The expected number of failures in 8 years is",exp_val_b,"failures \n")
+
+cat("The standard deviation is +/-",std_dev_b,"failures \n")
+```
+
+### Part C
+
+**Binomial**
+
+**Question**
+
+What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8
+years)
+
+$P(X=0) = \binom{8}{0} \left( \frac{1}{10} \right)^{0} \left( 1 - \frac{1}{10} \right)^{8}$
+
+$E[X] = n \times p$
+
+$\sigma=\sqrt{n \times p  \times  (1-p)}$
+
+```{r}
+#n years
+
+n_yrs=8
+
+#prob fail any year
+
+p_L_c=1/10
+
+#prob machine not fail in first 8 yrs
+prob_w_first_8_c = dbinom(0, size = n_yrs, prob = p_L_c)
+
+#prob will after 1st 8 yrs
+prob_L_after_8_c = 1 - prob_w_first_8_c
+
+# exp val
+exp_val_c = n_yrs * p_L_c
+
+# stdev
+std_dev_c = sqrt(n_yrs* p_L_c * (1 - p_L_c))
+
+
+cat("The probability that the machine will fail after 8 years is",prob_w_first_8_c,"or",prob_w_first_8_c*100,"% \n")
+
+cat("The expected number of failures in 8 years is",exp_val_c,"failures \n")
+
+cat("The standard deviation is +/-",std_dev_c,"failures \n")
+```
+
+### Part D
+
+**Poisson**
+
+**Question**
+
+What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a Poisson.
+
+$P(X=0) = \frac{\lambda^0 \times e^{-\lambda}}{0!}$
+
+$E[X] = \lambda$
+
+$\sigma=\sqrt{\lambda}$
+
+```{r}
+
+# avg rate of failure in 8 ysr
+
+lambda_L_d = 8 / 10
+
+# Prob that machine will not fail in the first 8 yrs
+
+prob_w_first_8_d= dpois(0, lambda_L_d)
+prob_L_after_8_d = 1 - prob_w_first_8_d
+
+#expected
+exp_val_d=lambda_L_d
+
+#std dev
+std_dev_d=sqrt(lambda_L_d)
+
+
+cat("The probability that the machine will fail after 8 years is",prob_L_after_8_d,"or",prob_L_after_8_d*100,"% \n")
+
+cat("The expected number of failures in 8 years is",exp_val_d,"failures \n")
+
+cat("The standard deviation is +/-",std_dev_d,"failures \n")
+```
